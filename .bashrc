@@ -3,7 +3,7 @@
 # Source global definitions
 # ============================================================================
 if [ -f /etc/bashrc ]; then
->___. /etc/bashrc
+  /etc/bashrc
 fi
 
 # IGNORE

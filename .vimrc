@@ -1,31 +1,30 @@
-"###エンコーディング###
-set encoding=utf-8
-
 "###表示設定###
 set number "行番号を表示する
 set title "編集中のファイル名を表示
 set showmatch "括弧入力時の対応する括弧を表示
 syntax on "コードの色分け
-set tabstop=4 "インデントをスペース4つ分に設定
+set tabstop=2 "tabをスペース2つ分に設定
 set smartindent "オートインデント
+set shiftwidth=2 "インデントを2つに設定
+set expandtab  "ソフトタブを有効にする(タブの代わりにスペースになる)
 
-" 検索設定
+"#####検索設定#####
 set ignorecase "大文字/小文字の区別なく検索する
 set smartcase "検索文字列に大文字が含まれている場合は区別して検索する
 set wrapscan "検索時に最後まで行ったら最初に戻る
 set cmdheight=2
 
-" mapping
+"####mapping####
 nmap <silent> <C-E> :NERDTreeToggle<CR>
 
-" neobundle setteings
+"###neobundle setteings
 set nocompatible               " Be iMproved
 
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
-call neobundle#begin(expand('~/.vim/bundle/'))
+call neobundle#rc(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
 NeoBundleFetch 'Shougo/neobundle.vim'
@@ -36,12 +35,11 @@ NeoBundle 'Shougo/neocomplcache'
 NeoBundle 'Lokaltog/powerline'
 NeoBundle 'taichouchou2/alpaca_powertabline'
 NeoBundle 'vim-scripts/grep.vim'
-NeoBundle 'nanotech/jellybeans.vim'
-" カラースキーム一覧表示に Unite.vim を使う
-NeoBundle 'Shougo/unite.vim'
-NeoBundle 'ujihisa/unite-colorscheme'
-
-call neobundle#end()
+NeoBundle 'tpope/vim-endwise'
+NeoBundle 'vim-ruby/vim-ruby'
+NeoBundle 'todesking/ruby_hl_lvar.vim'
+NeoBundle 'pocke/dicts'
+NeoBundle 'Shougo/neocomplete.vim'
 
 filetype plugin indent on     " Required!
 "
@@ -50,16 +48,25 @@ filetype plugin indent on     " Required!
 " :NeoBundleInstall(!)    - install(update) bundles
 " :NeoBundleClean(!)      - confirm(or auto-approve) removal of unused bundles
 
-" Installation check.
+ " Installation check.
 NeoBundleCheck
 
-" Neocomplcache
+"#Neocomplcache
 let g:neocomplcache_enable_at_startup = 1
 let g:neocomplcache_enable_smart_case = 1
 let g:neocomplcache_enable_underbar_completion = 1
 let g:neocomplcache_min_syntax_length = 3
-" power line settings
+"power line settings
 set laststatus=2
 
-" color scheme
-colorscheme jellybeans 
+" ruby_hl_lvar settings
+" Highligt group name for local variable
+" Default: 'Identifier'
+let g:ruby_hl_lvar_hl_group = 'RubyLocalVariable'
+" Auto enable and refresh highlight when text is changed. Useful but bit slow.
+" Default: 1
+let g:ruby_hl_lvar_auto_enable = 0
+" If you wish to control the plugin manually, map these functions.
+nmap <leader>he <Plug>(ruby_hl_lvar-enable)
+nmap <leader>hd <Plug>(ruby_hl_lvar-disable)
+nmap <leader>hr <Plug>(ruby_hl_lvar-refresh)

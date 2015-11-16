@@ -70,3 +70,6 @@ let g:ruby_hl_lvar_auto_enable = 0
 nmap <leader>he <Plug>(ruby_hl_lvar-enable)
 nmap <leader>hd <Plug>(ruby_hl_lvar-disable)
 nmap <leader>hr <Plug>(ruby_hl_lvar-refresh)
+
+" Neobundleinstall not using git:// but https://
+let g:neobundle#types#git#default_protocol = 'https'

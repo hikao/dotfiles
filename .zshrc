@@ -1,159 +1,189 @@
-# -------------------------------------
+########################################
 # 環境変数
-# -------------------------------------
+export LANG=ja_JP.UTF-8
 
-# SSHで接続した先で日本語が使えるようにする
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
+# ディレクトリ移動
+# ディレクトリ名を入力するだけでその場所へ移動できる
+setopt AUTO_CD
+cdpath=(.. ~ ~/Users/fukuzawh/local ~/local/git/hikao_github)
 
-# エディタ
-export EDITOR=/usr/bin/vim
+# ターミナル起動時にtmux起動する
+[[ -z "$TMUX" && ! -z "$PS1" ]] && tmux
 
-# tmux 起動の色彩の設定
-#export TERM="xterm"
-alias tmux="TERM=screen-256color-bce tmux"
-
-
-# -------------------------------------
-# zshのオプション
-# -------------------------------------
-
-## 補完機能の強化
-autoload -U compinit
-compinit
-
-## 入力しているコマンド名が間違っている場合にもしかして：を出す。
-setopt correct
-
-# ビープを鳴らさない
-setopt nobeep
-
-## 色を使う
-setopt prompt_subst
-
-## ^Dでログアウトしない。
-setopt ignoreeof
-
-## バックグラウンドジョブが終了したらすぐに知らせる。
-setopt no_tify
-
-## 直前と同じコマンドをヒストリに追加しない
-setopt hist_ignore_dups
-
-# 補完
-## タブによるファイルの順番切り替えをしない
-unsetopt auto_menu
-
-# cd -[tab]で過去のディレクトリにひとっ飛びできるようにする
-setopt auto_pushd
-
-#Emacキーバインド
+# Ctrl + AとかCtrl + Eを使えるようにする
 bindkey -e
 
-# ディレクトリ名を入力するだけでcdできるようにする
+# 色を使用出来るようにする
+autoload -Uz colors
+colors
+
+# ヒストリの設定
+HISTFILE=~/.zsh_history
+HISTSIZE=1000000
+SAVEHIST=1000000
+
+# プロンプト
+# 1行表示
+# PROMPT="%~ %# "
+# 2行表示
+PROMPT="%{${fg[green]}%}[%n@%m]%{${reset_color}%} %~
+%# "
+
+# 単語の区切り文字を指定する
+autoload -Uz select-word-style
+select-word-style default
+# ここで指定した文字は単語区切りとみなされる
+# / も区切りと扱うので、^W でディレクトリ１つ分を削除できる
+zstyle ':zle:*' word-chars " /=;@:{},|"
+zstyle ':zle:*' word-style unspecified
+
+########################################
+# 補完
+# 補完機能を有効にする
+autoload -Uz compinit
+compinit
+
+# 補完で小文字でも大文字にマッチさせる
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# ../ の後は今いるディレクトリを補完しない
+zstyle ':completion:*' ignore-parents parent pwd ..
+
+# sudo の後ろでコマンド名を補完する
+zstyle ':completion:*:sudo:*' command-path /usr/local/sbin /usr/local/bin \
+                   /usr/sbin /usr/bin /sbin /bin /usr/X11R6/bin
+
+# ps コマンドのプロセス名補完
+zstyle ':completion:*:processes' command 'ps x -o pid,s,args'
+
+
+########################################
+# vcs_info
+autoload -Uz vcs_info
+autoload -Uz add-zsh-hook
+
+zstyle ':vcs_info:*' formats '%F{green}(%s)-[%b]%f'
+zstyle ':vcs_info:*' actionformats '%F{red}(%s)-[%b|%a]%f'
+
+function _update_vcs_info_msg() {
+    LANG=en_US.UTF-8 vcs_info
+    RPROMPT="${vcs_info_msg_0_}"
+}
+add-zsh-hook precmd _update_vcs_info_msg
+
+
+########################################
+# オプション
+# 日本語ファイル名を表示可能にする
+setopt print_eight_bit
+
+# beep を無効にする
+setopt no_beep
+
+# フローコントロールを無効にする
+setopt no_flow_control
+
+# Ctrl+Dでzshを終了しない
+setopt ignore_eof
+
+# '#' 以降をコメントとして扱う
+setopt interactive_comments
+
+# ディレクトリ名だけでcdする
 setopt auto_cd
 
+# cd したら自動的にpushdする
+setopt auto_pushd
+# 重複したディレクトリを追加しない
+setopt pushd_ignore_dups
 
-# -------------------------------------
-# パス
-# -------------------------------------
+# 同時に起動したzshの間でヒストリを共有する
+setopt share_history
 
-# 重複する要素を自動的に削除
-typeset -U path cdpath fpath manpath
+# 同じコマンドをヒストリに残さない
+setopt hist_ignore_all_dups
 
-path=(
-    $HOME/bin(N-/)
-    /usr/local/bin(N-/)
-    /usr/local/sbin(N-/)
-    $path
-)
+# スペースから始まるコマンド行はヒストリに残さない
+setopt hist_ignore_space
+
+# ヒストリに保存するときに余分なスペースを削除する
+setopt hist_reduce_blanks
+
+# 高機能なワイルドカード展開を使用する
+setopt extended_glob
 
 
-# -------------------------------------
-# プロンプト
-# -------------------------------------
-
-autoload -U promptinit; promptinit
-autoload -Uz colors; colors
-autoload -Uz vcs_info
-autoload -Uz is-at-least
-
-# begin VCS
-zstyle ":vcs_info:*" enable git svn hg bzr
-zstyle ":vcs_info:*" formats "(%s)-[%b]"
-zstyle ":vcs_info:*" actionformats "(%s)-[%b|%a]"
-zstyle ":vcs_info:(svn|bzr):*" branchformat "%b:r%r"
-zstyle ":vcs_info:bzr:*" use-simple true
-
-zstyle ":vcs_info:*" max-exports 6
-
-if is-at-least 4.3.10; then
-    zstyle ":vcs_info:git:*" check-for-changes true # commitしていないのをチェック
-    zstyle ":vcs_info:git:*" stagedstr "<S>"
-    zstyle ":vcs_info:git:*" unstagedstr "<U>"
-    zstyle ":vcs_info:git:*" formats "(%b) %c%u"
-    zstyle ":vcs_info:git:*" actionformats "(%s)-[%b|%a] %c%u"
-fi
-
-function vcs_prompt_info() {
-    LANG=en_US.UTF-8 vcs_info
-    [[ -n "$vcs_info_msg_0_" ]] && echo -n " %{$fg[yellow]%}$vcs_info_msg_0_%f"
+########################################
+# peco設定
+function peco-history-selection() {
+    BUFFER=`history -n 1 | tail -r  | awk '!a[$0]++' | peco`
+    CURSOR=$#BUFFER
+    zle reset-prompt
 }
-# end VCS
 
-OK="^_^ "
-NG="X_X "
+zle -N peco-history-selection
 
-PROMPT=""
-#PROMPT+="%(?.%F{green}$OK%f.%F{red}$NG%f) "
-PROMPT+="%F{blue}%~%f"
-PROMPT+="\$(vcs_prompt_info)"
-PROMPT+="
-"
-PROMPT+="%% "
+########################################
+# ターミナル タイトルへの表示
+case "${TERM}" in
+kterm*|xterm)
+    precmd() {
+        echo -ne "\033]0;${USER}@${HOST}\007"
+    }
+    ;;
+esac 
 
-RPROMPT="[%*]"
+########################################
+# キーバインド
+# で履歴検索する時にpecoを使えるようにする
+bindkey '^R' peco-history-selection
 
-
-# -------------------------------------
+########################################
 # エイリアス
-# -------------------------------------
 
-# ls
-#alias ls="ls -GF" # color for darwin
-#alias l="ls -la"
-#alias la="ls -la"
-#alias l1="ls -1"
-#alias ll="ls -1"
+alias la='ls -a'
+alias ll='ls -l'
 
-# tree
-alias tree="tree -NC" # N: 文字化け対策, C:色をつける
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
 
+alias mkdir='mkdir -p'
 
-# -------------------------------------
-# tmux 自動起動
-# -------------------------------------
-if [ -z "$TMUX" -a -z "$STY" ]; then
-    if type tmuxx >/dev/null 2>&1; then
-        tmuxx
-    elif type tmux >/dev/null 2>&1; then
-        if tmux has-session && tmux list-sessions | /usr/bin/grep -qE '.*]$'; then
-            tmux attach && echo "tmux attached session "
-        else
-            tmux new-session && echo "tmux created new session"
-        fi
-    elif type screen >/dev/null 2>&1; then
-        screen -rx || screen -D -RR
-    fi
+# sudo の後のコマンドでエイリアスを有効にする
+alias sudo='sudo '
+
+# グローバルエイリアス
+alias -g L='| less'
+alias -g G='| grep'
+
+# C で標準出力をクリップボードにコピーする
+# mollifier delta blog : http://mollifier.hatenablog.com/entry/20100317/p1
+if which pbcopy >/dev/null 2>&1 ; then
+    # Mac
+    alias -g C='| pbcopy'
+elif which xsel >/dev/null 2>&1 ; then
+    # Linux
+    alias -g C='| xsel --input --clipboard'
+elif which putclip >/dev/null 2>&1 ; then
+    # Cygwin
+    alias -g C='| putclip'
 fi
 
-## -------------------------------------
-## rbenvの設定
-## -------------------------------------
-#if [ -d ${HOME}/.rbenv  ] ; then
-#    #PATH=${HOME}/.rbenv/bin:${PATH}
-#    #export PATH
-#    export RBENV_ROOT="/usr/local/rbenv"
-#    export PATH="${RBENV_ROOT}/bin:${PATH}"
-#    eval "$(rbenv init -)"
-#fi
+
+
+########################################
+# OS 別の設定
+case ${OSTYPE} in
+    darwin*)
+        #Mac用の設定
+        export CLICOLOR=1
+        alias ls='ls -G -F'
+        ;;
+    linux*)
+        #Linux用の設定
+        alias ls='ls -F --color=auto'
+        ;;
+esac
+
+# vim:set ft=zsh:

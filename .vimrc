@@ -1,3 +1,6 @@
+"###neobundle setteings
+set nocompatible               " Be iMproved
+
 "###表示設定###
 set number "行番号を表示する
 set title "編集中のファイル名を表示
@@ -7,6 +10,8 @@ set tabstop=2 "tabをスペース2つ分に設定
 set smartindent "オートインデント
 set shiftwidth=2 "インデントを2つに設定
 set expandtab  "ソフトタブを有効にする(タブの代わりにスペースになる)
+set cursorline "行を強調表示
+"set cursorcolumn "列を強調表示
 
 "#####検索設定#####
 set ignorecase "大文字/小文字の区別なく検索する
@@ -14,11 +19,11 @@ set smartcase "検索文字列に大文字が含まれている場合は区別�
 set wrapscan "検索時に最後まで行ったら最初に戻る
 set cmdheight=2
 
+"####カーソル移動####
+set whichwrap=b,s,<,>,[,],h,l
+
 "####mapping####
 nmap <silent> <C-E> :NERDTreeToggle<CR>
-
-"###neobundle setteings
-set nocompatible               " Be iMproved
 
 if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/

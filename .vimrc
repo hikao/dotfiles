@@ -24,6 +24,10 @@ if has('vim_starting')
   set runtimepath+=~/.vim/bundle/neobundle.vim/
 endif
 
+if !exists('loaded_matchit')
+    runtime macros/matchit.vim
+endif
+
 call neobundle#begin(expand('~/.vim/bundle/'))
 
 " Let NeoBundle manage NeoBundle
@@ -40,6 +44,7 @@ NeoBundle 'vim-ruby/vim-ruby'
 NeoBundle 'todesking/ruby_hl_lvar.vim'
 NeoBundle 'pocke/dicts'
 NeoBundle 'Shougo/neocomplete.vim'
+NeoBundle 'matchit.zip'
 
 call neobundle#end()
 

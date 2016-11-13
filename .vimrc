@@ -1,4 +1,4 @@
-"###表示設定###
+"u BufNewFile,BufRead * match ZenkakuSpace /　/###表示設定###
 set number "行番号を表示する
 set title "編集中のファイル名を表示
 set showmatch "括弧入力時の対応する括弧を表示
@@ -99,3 +99,17 @@ command! CtrlPCommandLine call ctrlp#init(ctrlp#commandline#id())
 
 " CtrlPFunkyの有効化
 let g:ctrlp_funky_matchtype = 'path' 
+
+" 全角スペース可視化
+function! ZenkakuSpace()
+    highlight ZenkakuSpace cterm=reverse ctermfg=DarkMagenta gui=reverse guifg=DarkMagenta
+endfunction
+   
+if has('syntax')
+    augroup ZenkakuSpace
+        autocmd!
+        autocmd ColorScheme       * call ZenkakuSpace()
+        autocmd VimEnter,WinEnter * match ZenkakuSpace /　/
+    augroup END
+    call ZenkakuSpace()
+endif
